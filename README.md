@@ -9,3 +9,11 @@ Java 1.8.0_321
 Android 11<br>
 Kotlin<br>
 Firebase
+<br><br>
+## 문제 & 해결
+### 1. 이메일 로그인 진행 시, 'The email address is already in use by another account.' 오류
+#### [해결] 로그인 후 trim으로 
+### 2. 구글 로그인 진행 시, Auth.GoogleSignInApi.getSignInResultFromIntent(data).isSuccess = false 오류
+#### firebase에 SHA 미인증으로 문제 발생
+#### -> Gradle(우측)/Tasks/android/signingReport 을 통해 SHA1 값 확인 
+#### -> firebase 일반 설정에 등록
