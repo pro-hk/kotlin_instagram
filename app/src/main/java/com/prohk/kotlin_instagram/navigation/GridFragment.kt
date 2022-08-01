@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.prohk.kotlin_instagram.R
-import com.prohk.kotlin_instagram.databinding.FragmentDetailBinding
 
 class GridFragment:Fragment() {
     override fun onCreateView(
