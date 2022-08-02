@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.prohk.kotlin_instagram.databinding.ActivityMainBinding
 import com.prohk.kotlin_instagram.navigation.*
 
@@ -23,6 +24,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         // 사진 경로를 가져올 수 있는 권한 요청
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+
+        // 메인화면이 뜨면 detail view가 default
+        binding.bottomNavigation.selectedItemId = R.id.action_home
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -54,6 +58,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
             R.id.action_account -> {
                 var userFragment = UserFragment()
+                var bundle = Bundle()
+                var uid = FirebaseAuth.getInstance().currentUser?.uid
+                bundle.putString("destinationUid",uid)
+                userFragment.arguments = bundle
                 supportFragmentManager.beginTransaction().replace(R.id.main_content, userFragment)
                     .commit()
                 return true
