@@ -17,8 +17,11 @@ Firebase
 #### firebase에 SHA 미인증으로 문제 발생
 #### -> Gradle(우측)/Tasks/android/signingReport 을 통해 SHA1 값 확인 
 #### -> firebase 일반 설정에 등록
-### 3. DetailViewFragment - binding  문제(activity as MainActivity)
+### 3. DetailViewFragment & RecyclerView - binding  문제
 #### onCreateView class에 binding = FragmentBinding.inflate(inflate, container, false)
 #### DetailViewRecyclerAdapter(): RecyclerView.Adapter<CustomViewHolder>()
 #### onCreateViewHolder class에 view = ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 #### onBindViewHolder class에 viewHolder = holder.binding
+### 4. 프로필 사진 클릭 -> user page 전환 시 mainActivity 변경 안됨
+#### mainBinding = ActivityMainBinding.inflate(inflate, container, false) -> mainBinding = (activity as MainActivity)
+#### mainBinding.binding.위젯~~ 가능
