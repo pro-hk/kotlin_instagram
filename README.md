@@ -17,3 +17,8 @@ Firebase
 #### firebase에 SHA 미인증으로 문제 발생
 #### -> Gradle(우측)/Tasks/android/signingReport 을 통해 SHA1 값 확인 
 #### -> firebase 일반 설정에 등록
+### 3. DetailViewFragment - binding  문제
+#### onCreateView class에 binding = FragmentBinding.inflate(inflate, container, false)
+#### DetailViewRecyclerAdapter(): RecyclerView.Adapter<CustomViewHolder>()
+#### onCreateViewHolder class에 view = ItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+#### onBindViewHolder class에 viewHolder = holder.binding
