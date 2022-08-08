@@ -1,7 +1,6 @@
 package com.prohk.kotlin_instagram.navigation
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,7 @@ import com.prohk.kotlin_instagram.databinding.ItemDetailBinding
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO
 
 class DetailViewFragment : Fragment() {
-    val binding by lazy { FragmentDetailBinding.inflate(layoutInflater) }
+    lateinit var binding: FragmentDetailBinding
 
     var firestore: FirebaseFirestore? = null
 
@@ -30,7 +29,7 @@ class DetailViewFragment : Fragment() {
     ): View? {
         uid = FirebaseAuth.getInstance().currentUser?.uid
 
-        var binding = FragmentDetailBinding.inflate(inflater,container,false)
+        binding = FragmentDetailBinding.inflate(inflater,container,false)
 
         firestore = FirebaseFirestore.getInstance()
         binding.detailviewfragmentRecyclerview.adapter = DetailViewRecyclerViewAdapter()
@@ -39,7 +38,8 @@ class DetailViewFragment : Fragment() {
         return binding.root
     }
 
-    inner class DetailViewRecyclerViewAdapter : RecyclerView.Adapter<DetailViewRecyclerViewAdapter.CustomViewHolder>() {
+    inner class CustomViewHolder(var binding:ItemDetailBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class DetailViewRecyclerViewAdapter() : RecyclerView.Adapter<CustomViewHolder>() {
         var contentDTOs: ArrayList<ContentDTO> = arrayListOf()
         var contentUidList: ArrayList<String> = arrayListOf()
 
@@ -47,6 +47,9 @@ class DetailViewFragment : Fragment() {
             firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { value, error ->
                 contentDTOs.clear()
                 contentUidList.clear()
+                // 로그아웃 시 안정성을 위해
+                if(value == null) return@addSnapshotListener
+
                 for(snapshot in value!!.documents) {
                     var item = snapshot.toObject(ContentDTO::class.java)
                     contentDTOs.add(item!!)
@@ -61,10 +64,9 @@ class DetailViewFragment : Fragment() {
             return CustomViewHolder(view)
         }
 
-        inner class CustomViewHolder(binding:ItemDetailBinding) : RecyclerView.ViewHolder(binding.root)
 
         override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-            val viewHolder = ItemDetailBinding.inflate(layoutInflater)
+            val viewHolder = holder.binding
 
             // userId
             viewHolder.detailviewitemProfileTextview.text = contentDTOs[position].userId
@@ -90,6 +92,16 @@ class DetailViewFragment : Fragment() {
 
             // profile image
             Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).into(viewHolder.detailviewitemProfileImage)
+
+            // 프로필 이미지 클릭했을 때
+            viewHolder.detailviewitemProfileImage.setOnClickListener {
+                var fragment = UserFragment()
+                var bundle = Bundle()
+                bundle.putString("destinationUid",contentDTOs[position].uid)
+                bundle.putString("userId",contentDTOs[position].userId)
+                fragment.arguments = bundle
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content, fragment)?.commit()
+            }
         }
 
         override fun getItemCount(): Int {

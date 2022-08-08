@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        setToolbarDefault()
         when (item.itemId) {
             R.id.action_home -> {
                 var detailViewFragment = DetailViewFragment()
@@ -68,5 +70,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
         }
         return false
+    }
+
+    fun setToolbarDefault() {
+        binding.toolbarUsername.visibility = View.GONE
+        binding.toolbarBtnBack.visibility = View.GONE
+        binding.toolbarTitleImage.visibility = View.VISIBLE
     }
 }

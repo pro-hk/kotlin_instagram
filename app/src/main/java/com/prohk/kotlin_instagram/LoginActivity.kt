@@ -76,6 +76,12 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // 자동 로그인 기능
+    override fun onStart() {
+        super.onStart()
+        moveMainPage(auth?.currentUser)
+    }
+
     // 페이스북 해시키
     fun printHashKey() {
         try {
@@ -208,6 +214,7 @@ class LoginActivity : AppCompatActivity() {
     fun moveMainPage(user:FirebaseUser?) {
         if(user != null) {
             startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 }
