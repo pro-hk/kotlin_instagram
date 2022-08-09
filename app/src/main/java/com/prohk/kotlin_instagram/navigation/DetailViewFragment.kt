@@ -15,6 +15,7 @@ import com.google.firebase.firestore.Query
 import com.prohk.kotlin_instagram.R
 import com.prohk.kotlin_instagram.databinding.FragmentDetailBinding
 import com.prohk.kotlin_instagram.databinding.ItemDetailBinding
+import com.prohk.kotlin_instagram.navigation.model.AlarmDTO
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO
 
 class DetailViewFragment : Fragment() {
@@ -118,6 +119,7 @@ class DetailViewFragment : Fragment() {
             viewHolder.detailviewitemCommentImageview.setOnClickListener {
                 var intent = Intent(it.context, CommentActivity::class.java)
                 intent.putExtra("contentUid",contentUidList[position])
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
                 startActivity(intent)
             }
         }
@@ -139,9 +141,23 @@ class DetailViewFragment : Fragment() {
                     // 버튼이 클릭되어 있지 않을 때
                     contentDTO?.favoriteCount = contentDTO!!.favoriteCount + 1
                     contentDTO!!.favorites[uid!!] = true
+
+                    // 좋아요 누르면 알람
+                    favoriteAlarm(contentDTOs[position].uid!!)
                 }
                 transaction.set(tsDoc, contentDTO)
             }
+        }
+
+        // 좋아요 알람
+        fun favoriteAlarm(destinationUid: String) {
+            var alarmDTO = AlarmDTO()
+            alarmDTO.destinationUid = destinationUid
+            alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+            alarmDTO.uid = FirebaseAuth.getInstance().uid
+            alarmDTO.kind = 0
+            alarmDTO.timestamp = System.currentTimeMillis()
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
         }
     }
 }

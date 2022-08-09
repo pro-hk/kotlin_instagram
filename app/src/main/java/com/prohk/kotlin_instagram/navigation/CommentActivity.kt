@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prohk.kotlin_instagram.databinding.ActivityCommentBinding
 import com.prohk.kotlin_instagram.databinding.ItemCommentBinding
+import com.prohk.kotlin_instagram.navigation.model.AlarmDTO
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO
 
 class CommentActivity : AppCompatActivity() {
@@ -19,12 +20,14 @@ class CommentActivity : AppCompatActivity() {
     val binding by lazy { ActivityCommentBinding.inflate(layoutInflater) }
 
     var contentUid: String? = null
+    var destinationUid: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         contentUid = intent.getStringExtra("contentUid")
+        destinationUid = intent.getStringExtra("destinationUid")
 
         binding.commentRecyclerview.adapter = CommentRecyclerviewAdapter()
         binding.commentRecyclerview.layoutManager = LinearLayoutManager(this)
@@ -43,13 +46,29 @@ class CommentActivity : AppCompatActivity() {
                 .document()
                 .set(comment)
 
+            commentAlarm(destinationUid!!, binding.commentEditMessage.text.toString())
+
             binding.commentEditMessage.setText("")
         }
     }
 
-    inner class CustomViewHolder(val binding: ItemCommentBinding): RecyclerView.ViewHolder(binding.root)
-    inner class CommentRecyclerviewAdapter: RecyclerView.Adapter<CustomViewHolder>() {
+    // 댓글 달았을 때 알림
+    fun commentAlarm(destinationUid: String, message: String) {
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+        alarmDTO.uid = FirebaseAuth.getInstance()?.uid
+        alarmDTO.timestamp = System.currentTimeMillis()
+        alarmDTO.message = message
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+    }
+
+    inner class CustomViewHolder(val binding: ItemCommentBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    inner class CommentRecyclerviewAdapter : RecyclerView.Adapter<CustomViewHolder>() {
         var comments: ArrayList<ContentDTO.Comment> = arrayListOf()
+
         init {
             FirebaseFirestore.getInstance()
                 .collection("images")
@@ -58,15 +77,17 @@ class CommentActivity : AppCompatActivity() {
                 .orderBy("timestamp")
                 .addSnapshotListener { value, error ->
                     comments.clear()
-                    if(value == null) return@addSnapshotListener
+                    if (value == null) return@addSnapshotListener
 
-                    for(snapshot in value!!) {
+                    for (snapshot in value!!) {
                         comments.add(snapshot.toObject(ContentDTO.Comment::class.java)!!)
                     }
                 }
         }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-            var view = ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            var view =
+                ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return CustomViewHolder(view)
         }
 
@@ -79,7 +100,7 @@ class CommentActivity : AppCompatActivity() {
                 .document(comments[position].uid!!)
                 .get()
                 .addOnCompleteListener {
-                    if(it.isSuccessful) {
+                    if (it.isSuccessful) {
                         var url = it.result!!["image"]
                         Glide.with(holder.itemView.context)
                             .load(url)

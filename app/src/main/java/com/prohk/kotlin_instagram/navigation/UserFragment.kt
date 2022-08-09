@@ -20,6 +20,7 @@ import com.prohk.kotlin_instagram.MainActivity
 import com.prohk.kotlin_instagram.R
 import com.prohk.kotlin_instagram.databinding.FragmentUserBinding
 import com.prohk.kotlin_instagram.databinding.ItemImageviewBinding
+import com.prohk.kotlin_instagram.navigation.model.AlarmDTO
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO
 import com.prohk.kotlin_instagram.navigation.model.FollowDTO
 
@@ -138,6 +139,8 @@ class UserFragment : Fragment() {
                 followDTO!!.followers[currentUserId!!] = true
 
                 it.set(tsDocFollower, followDTO!!)
+
+                followAlarm(uid!!)
                 return@runTransaction
             }
 
@@ -149,6 +152,7 @@ class UserFragment : Fragment() {
                 // 상대방 계정에 팔로우 하지 않은 경우
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserId!!] = true
+                followAlarm(uid!!)
             }
             it.set(tsDocFollower, followDTO!!)
             return@runTransaction
@@ -181,6 +185,17 @@ class UserFragment : Fragment() {
                 }
             }
         }
+    }
+
+    // 팔로우 알람
+    fun followAlarm(destinationUid: String) {
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = auth?.currentUser?.email
+        alarmDTO.uid = auth?.uid
+        alarmDTO.kind = 2
+        alarmDTO.timestamp = System.currentTimeMillis()
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
     }
 
     inner class CustomViewHolder(val binding: ItemImageviewBinding) :
