@@ -4,7 +4,7 @@
     package="com.prohk.kotlin_instagram">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Kotlin_instagram"
         tools:targetApi="31">
+        <activity
+            android:name=".navigation.CommentActivity"
+            android:exported="false" />
         <activity
             android:name=".navigation.AddPhotoActivity"
             android:exported="false" />
@@ -30,7 +33,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity> <!-- 페이스북 설정 -->
+            android:exported="true" /> <!-- 페이스북 설정 -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />

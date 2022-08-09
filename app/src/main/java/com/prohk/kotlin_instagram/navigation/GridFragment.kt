@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prohk.kotlin_instagram.R
 import com.prohk.kotlin_instagram.databinding.FragmentGridBinding
 import com.prohk.kotlin_instagram.databinding.ItemImageviewBinding
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO

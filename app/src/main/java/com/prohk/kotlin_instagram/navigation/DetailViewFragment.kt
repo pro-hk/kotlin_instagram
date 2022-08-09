@@ -1,5 +1,6 @@
 package com.prohk.kotlin_instagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.prohk.kotlin_instagram.R
 import com.prohk.kotlin_instagram.databinding.FragmentDetailBinding
 import com.prohk.kotlin_instagram.databinding.ItemDetailBinding
@@ -44,7 +46,7 @@ class DetailViewFragment : Fragment() {
         var contentUidList: ArrayList<String> = arrayListOf()
 
         init {
-            firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { value, error ->
+            firestore?.collection("images")?.orderBy("timestamp",Query.Direction.DESCENDING)?.addSnapshotListener { value, error ->
                 contentDTOs.clear()
                 contentUidList.clear()
                 // 로그아웃 시 안정성을 위해
@@ -74,6 +76,7 @@ class DetailViewFragment : Fragment() {
             // image
             Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).into(viewHolder.detailviewitemImageviewContent)
 
+
             // explain
             viewHolder.detailviewitemExplainTextview.text = contentDTOs[position].explain
 
@@ -91,7 +94,15 @@ class DetailViewFragment : Fragment() {
             }
 
             // profile image
-            Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).into(viewHolder.detailviewitemProfileImage)
+            //Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).into(viewHolder.detailviewitemProfileImage)
+            firestore?.collection("profileImages")
+                ?.document(contentDTOs[position].uid!!)
+                ?.addSnapshotListener { value, error ->
+                    var url = value?.data!!["image"]
+                    Glide.with(holder.itemView.context)
+                        .load(url)
+                        .into(viewHolder.detailviewitemProfileImage)
+                }
 
             // 프로필 이미지 클릭했을 때
             viewHolder.detailviewitemProfileImage.setOnClickListener {
@@ -101,6 +112,13 @@ class DetailViewFragment : Fragment() {
                 bundle.putString("userId",contentDTOs[position].userId)
                 fragment.arguments = bundle
                 activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content, fragment)?.commit()
+            }
+
+            // 댓글이미지 눌렀을 때 창 전환
+            viewHolder.detailviewitemCommentImageview.setOnClickListener {
+                var intent = Intent(it.context, CommentActivity::class.java)
+                intent.putExtra("contentUid",contentUidList[position])
+                startActivity(intent)
             }
         }
 
