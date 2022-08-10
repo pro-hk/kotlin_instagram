@@ -27,3 +27,5 @@ Firebase
 #### mainBinding.binding.위젯~~ 가능
 ### 5. firebase 내림차순 변경
 #### orderBy("X", Query.Direction.DESCENDING) -- X : 정렬 기준
+### 6. 댓글창 진입 및 댓글 등록시 refresh 안됨
+#### RecyclerViewAdapter - init 의 addSnapshotListener 에 notifyDataSetchanged() 적용
