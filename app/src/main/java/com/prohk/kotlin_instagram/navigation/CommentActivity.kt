@@ -57,6 +57,7 @@ class CommentActivity : AppCompatActivity() {
         var alarmDTO = AlarmDTO()
         alarmDTO.destinationUid = destinationUid
         alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+        alarmDTO.kind = 1
         alarmDTO.uid = FirebaseAuth.getInstance()?.uid
         alarmDTO.timestamp = System.currentTimeMillis()
         alarmDTO.message = message
@@ -82,6 +83,7 @@ class CommentActivity : AppCompatActivity() {
                     for (snapshot in value!!) {
                         comments.add(snapshot.toObject(ContentDTO.Comment::class.java)!!)
                     }
+                    notifyDataSetChanged()
                 }
         }
 
