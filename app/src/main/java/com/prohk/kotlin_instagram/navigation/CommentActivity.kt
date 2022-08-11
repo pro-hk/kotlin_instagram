@@ -10,10 +10,12 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.prohk.kotlin_instagram.R
 import com.prohk.kotlin_instagram.databinding.ActivityCommentBinding
 import com.prohk.kotlin_instagram.databinding.ItemCommentBinding
 import com.prohk.kotlin_instagram.navigation.model.AlarmDTO
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO
+import com.prohk.kotlin_instagram.navigation.util.FcmPush
 
 class CommentActivity : AppCompatActivity() {
 
@@ -62,6 +64,10 @@ class CommentActivity : AppCompatActivity() {
         alarmDTO.timestamp = System.currentTimeMillis()
         alarmDTO.message = message
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        // push 알람
+        var msg = FirebaseAuth.getInstance().currentUser?.email + " " + getString(R.string.alarm_comment) + " of " + message
+        FcmPush.instance.sendMessage(destinationUid,"prohkstagram",msg)
     }
 
     inner class CustomViewHolder(val binding: ItemCommentBinding) :

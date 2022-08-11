@@ -23,6 +23,7 @@ import com.prohk.kotlin_instagram.databinding.ItemImageviewBinding
 import com.prohk.kotlin_instagram.navigation.model.AlarmDTO
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO
 import com.prohk.kotlin_instagram.navigation.model.FollowDTO
+import com.prohk.kotlin_instagram.navigation.util.FcmPush
 
 class UserFragment : Fragment() {
     lateinit var binding: FragmentUserBinding
@@ -196,6 +197,10 @@ class UserFragment : Fragment() {
         alarmDTO.kind = 2
         alarmDTO.timestamp = System.currentTimeMillis()
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        // push 알람
+        var message = auth?.currentUser?.email + getString(R.string.alarm_follow)
+        FcmPush.instance.sendMessage(destinationUid,"prohkstagram",message)
     }
 
     inner class CustomViewHolder(val binding: ItemImageviewBinding) :

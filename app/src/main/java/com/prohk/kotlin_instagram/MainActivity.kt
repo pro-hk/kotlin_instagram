@@ -3,18 +3,20 @@ package com.prohk.kotlin_instagram
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.prohk.kotlin_instagram.databinding.ActivityMainBinding
 import com.prohk.kotlin_instagram.navigation.*
+import com.prohk.kotlin_instagram.navigation.util.FcmPush
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -30,6 +32,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
         // 메인화면이 뜨면 detail view가 default
         binding.bottomNavigation.selectedItemId = R.id.action_home
+
+        // 로그인되자마자 push토큰 저장
+        registerPushToken()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -72,6 +77,18 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
         }
         return false
+    }
+
+    // firebase 알림 토큰 받기
+    fun registerPushToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            val token = task.result
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            val map = mutableMapOf<String, Any>()
+            map["pushToken"] = token
+
+            FirebaseFirestore.getInstance().collection("pushTokens").document(uid!!).set(map)
+        }
     }
 
     fun setToolbarDefault() {

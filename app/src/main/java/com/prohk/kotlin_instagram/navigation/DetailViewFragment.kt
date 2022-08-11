@@ -17,6 +17,7 @@ import com.prohk.kotlin_instagram.databinding.FragmentDetailBinding
 import com.prohk.kotlin_instagram.databinding.ItemDetailBinding
 import com.prohk.kotlin_instagram.navigation.model.AlarmDTO
 import com.prohk.kotlin_instagram.navigation.model.ContentDTO
+import com.prohk.kotlin_instagram.navigation.util.FcmPush
 
 class DetailViewFragment : Fragment() {
     lateinit var binding: FragmentDetailBinding
@@ -95,15 +96,15 @@ class DetailViewFragment : Fragment() {
             }
 
             // profile image
-            //Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).into(viewHolder.detailviewitemProfileImage)
-            firestore?.collection("profileImages")
+            Glide.with(holder.itemView.context).load(contentDTOs[position].imageUrl).into(viewHolder.detailviewitemProfileImage)
+            /*firestore?.collection("profileImages")
                 ?.document(contentDTOs[position].uid!!)
                 ?.addSnapshotListener { value, error ->
                     var url = value?.data!!["image"]
                     Glide.with(holder.itemView.context)
                         .load(url)
                         .into(viewHolder.detailviewitemProfileImage)
-                }
+                }*/
 
             // 프로필 이미지 클릭했을 때
             viewHolder.detailviewitemProfileImage.setOnClickListener {
@@ -158,6 +159,10 @@ class DetailViewFragment : Fragment() {
             alarmDTO.kind = 0
             alarmDTO.timestamp = System.currentTimeMillis()
             FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+            // push 알람
+            var message = FirebaseAuth.getInstance().currentUser?.email + getString(R.string.alarm_favorite)
+            FcmPush.instance.sendMessage(destinationUid, "prohkstagram",message)
         }
     }
 }
