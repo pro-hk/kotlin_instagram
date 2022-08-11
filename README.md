@@ -31,3 +31,5 @@ Firebase
 #### RecyclerViewAdapter - init 의 addSnapshotListener 에 notifyDataSetchanged() 적용
 ### 7. FirebaseInstanceID 가 Deprecated되어 사용 불가
 #### FirebaseInstanceId.getInstance().instanceId -> FirebaseMessaging.getInstance().token
+### 8. legacy server key 가 Deprecated되어 사용 불가
+#### 파이어베이스 프로젝트 설정 - 클라우드 메시징 - 서버키 설정
