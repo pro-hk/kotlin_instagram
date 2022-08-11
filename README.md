@@ -29,3 +29,5 @@ Firebase
 #### orderBy("X", Query.Direction.DESCENDING) -- X : 정렬 기준
 ### 6. 댓글창 진입 및 댓글 등록시 refresh 안됨
 #### RecyclerViewAdapter - init 의 addSnapshotListener 에 notifyDataSetchanged() 적용
+### 7. FirebaseInstanceID 가 Deprecated되어 사용 불가
+#### FirebaseInstanceId.getInstance().instanceId -> FirebaseMessaging.getInstance().token
